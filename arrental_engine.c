@@ -489,15 +489,16 @@ bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
 void AE_DestroyLinkedTexture_Unsafe(AE_LinkedTexture* linkedTexture)
 {
     AE_SheetLink* tempSheetLink;
-    while (linkedTexture->references > 0)
+    AE_SheetLink* freeSheetLink = NULL;
+    if (linkedTexture->references > 0)
     {
         tempSheetLink = linkedTexture->linkedList;
-        while (tempSheetLink->next != NULL)
+        while (tempSheetLink != NULL)
         {
+            freeSheetLink = tempSheetLink;
             tempSheetLink = tempSheetLink->next;
+            free(freeSheetLink);
         }
-        free(tempSheetLink);
-        linkedTexture->references--;
     }
     SDL_DestroyTexture(linkedTexture->texture);
     free(linkedTexture);
@@ -533,6 +534,7 @@ AE_Sprite* AE_CreateSprite(AE_LinkedTexture* spriteSheet, int reference_x, int r
 {
     AE_Sprite* output = malloc(sizeof(AE_Sprite));
     
+    output->spriteSheet = NULL;
     output->frames = NULL;
     output->width = width;
     output->height = height;
@@ -571,6 +573,10 @@ AE_Sprite* AE_CreateSprite(AE_LinkedTexture* spriteSheet, int reference_x, int r
  */
 void AE_SpriteSetSpriteSheet(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int frameCount, int reference_x, int reference_y, int frame_width, int frame_height, AE_Flag dataToKeep)
 {
+    if (sprite->spriteSheet != NULL)
+    {
+        AE_LinkedTexture_Leave(sprite->spriteSheet, sprite);
+    }
     sprite->spriteSheet = spriteSheet;
     AE_LinkedTexture_Join(spriteSheet, sprite);
     
