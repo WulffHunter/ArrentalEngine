@@ -103,19 +103,37 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
 }
 
 /**
- Closes SDL
-
+ Destroys an AE_WindowBundle and closes SDL
+ 
  @param closeWindowBundle The WindowBundle to be closed
  */
 void AE_Close(AE_WindowBundle* closeWindowBundle)
 {
+    //Use the method for modularity
+    AE_DestroyWindowBundle(closeWindowBundle);
+    
+    AE_CloseSDL();
+}
+
+/**
+ Destroys an AE_WindowBundle and sets the pointer to NULL
+
+ @param closeWindowBundle The WindowBundle to be closed
+ */
+void AE_DestroyWindowBundle(AE_WindowBundle* closeWindowBundle)
+{
     //Close the window and renderer
     SDL_DestroyRenderer(closeWindowBundle->renderer);
-    closeWindowBundle->renderer = NULL;
-    
     SDL_DestroyWindow(closeWindowBundle->window);
-    closeWindowBundle->window = NULL;
-    
+    free(closeWindowBundle);
+    closeWindowBundle = NULL;
+}
+
+/**
+ Closes SDL
+ */
+void AE_CloseSDL()
+{
     SDL_Quit();
     IMG_Quit();
     TTF_Quit();

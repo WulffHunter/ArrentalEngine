@@ -52,11 +52,23 @@ typedef struct {
 AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, bool vsync_enabled);
 
 /**
- Closes SDL
+ Destroys an AE_WindowBundle and closes SDL
  
  @param closeWindowBundle The WindowBundle to be closed
  */
 void AE_Close(AE_WindowBundle* closeWindowBundle);
+
+/**
+ Destroys an AE_WindowBundle and sets the pointer to NULL
+ 
+ @param closeWindowBundle The WindowBundle to be closed
+ */
+void AE_DestroyWindowBundle(AE_WindowBundle* closeWindowBundle);
+
+/**
+ Closes SDL
+ */
+void AE_CloseSDL();
 
 //
 //
