@@ -539,9 +539,9 @@ void AE_DestroyLinkedTexture_Unsafe(AE_LinkedTexture* linkedTexture)
 //
 
 /**
- Creates a new AE_Sprite from a preexisting SDL_Texture
+ Creates a new AE_Sprite from a preexisting LinkedTexture
  
- @param spriteSheet The preexisting SDL_Texture that will be used as the sprite sheet
+ @param spriteSheet The preexisting LinkedTexture that will be used as the sprite sheet
  @param reference_x The x of the sprite on the spritesheet
  @param reference_y The y of the sprite on the spritesheet
  @param frameCount The number of frames in the sprite
@@ -555,29 +555,47 @@ AE_Sprite* AE_CreateSprite(AE_LinkedTexture* spriteSheet, int reference_x, int r
 {
     AE_Sprite* output = malloc(sizeof(AE_Sprite));
     
-    output->spriteSheet = NULL;
-    output->frames = NULL;
-    output->width = width;
-    output->height = height;
-    
-    AE_SpriteSetSpriteSheet(output, spriteSheet, frameCount, reference_x, reference_y, width, height, AE_SPRITE_KEEP_NONE);
-    
-    AE_SpriteSetPivot(output, pivot_x, pivot_y, AE_SPRITE_KEEP_NONE);
-    
-    AE_SpriteSetAngle(output, 0.0);
-    AE_SpriteSetFlip(output, SDL_FLIP_NONE);
-    
-    output->drawRect.x = 0;
-    output->drawRect.y = 0;
-    AE_SpriteSetScale(output, 1, 1, AE_SPRITE_DEFAULT);
-    
-    //Default frame speed is 30
-    AE_SpriteSetFrameSpeed(output, 30);
-    
-    AE_SpriteSetColor(output, NULL, AE_SPRITE_DEFAULT);
-    output->alpha = 255;
+    //Offloads work to another function for modularity
+    AE_FillSprite(output, spriteSheet, reference_x, reference_y, frameCount, width, height, pivot_x, pivot_y);
     
     return output;
+}
+
+/**
+ Guts out and fills a sprite with the given data
+ 
+ @param spriteSheet The preexisting LinkedTexture that will be used as the sprite sheet
+ @param reference_x The x of the sprite on the spritesheet
+ @param reference_y The y of the sprite on the spritesheet
+ @param frameCount The number of frames in the sprite
+ @param width The width of a single sprite frame
+ @param height The height of a single sprite frame
+ @param pivot_x The x of the sprite pivot point
+ @param pivot_y The y of the sprite pivot point
+ */
+void AE_FillSprite(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int reference_x, int reference_y, int frameCount, int width, int height, int pivot_x, int pivot_y)
+{
+    sprite->spriteSheet = NULL;
+    sprite->frames = NULL;
+    sprite->width = width;
+    sprite->height = height;
+    
+    AE_SpriteSetSpriteSheet(sprite, spriteSheet, frameCount, reference_x, reference_y, width, height, AE_SPRITE_KEEP_NONE);
+    
+    AE_SpriteSetPivot(sprite, pivot_x, pivot_y, AE_SPRITE_KEEP_NONE);
+    
+    AE_SpriteSetAngle(sprite, 0.0);
+    AE_SpriteSetFlip(sprite, SDL_FLIP_NONE);
+    
+    sprite->drawRect.x = 0;
+    sprite->drawRect.y = 0;
+    AE_SpriteSetScale(sprite, 1, 1, AE_SPRITE_DEFAULT);
+    
+    //Default frame speed is 30
+    AE_SpriteSetFrameSpeed(sprite, 30);
+    
+    AE_SpriteSetColor(sprite, NULL, AE_SPRITE_DEFAULT);
+    sprite->alpha = 255;
 }
 
 /**

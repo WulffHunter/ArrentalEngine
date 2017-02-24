@@ -284,9 +284,9 @@ typedef enum {
 }AE_Flag;
 
 /**
- Creates a new AE_Sprite from a preexisting SDL_Texture
+ Creates a new AE_Sprite from a preexisting LinkedTexture
  
- @param spriteSheet The preexisting SDL_Texture that will be used as the sprite sheet
+ @param spriteSheet The preexisting LinkedTexture that will be used as the sprite sheet
  @param reference_x The x of the sprite on the spritesheet
  @param reference_y The y of the sprite on the spritesheet
  @param frameCount The number of frames in the sprite
@@ -297,6 +297,20 @@ typedef enum {
  @return The initialized AE_Sprite, with all other parameters set to default
  */
 AE_Sprite* AE_CreateSprite(AE_LinkedTexture* spriteSheet, int reference_x, int reference_y, int frameCount, int width, int height, int pivot_x, int pivot_y);
+
+/**
+ Guts out and fills a sprite with the given data
+ 
+ @param spriteSheet The preexisting LinkedTexture that will be used as the sprite sheet
+ @param reference_x The x of the sprite on the spritesheet
+ @param reference_y The y of the sprite on the spritesheet
+ @param frameCount The number of frames in the sprite
+ @param width The width of a single sprite frame
+ @param height The height of a single sprite frame
+ @param pivot_x The x of the sprite pivot point
+ @param pivot_y The y of the sprite pivot point
+ */
+void AE_FillSprite(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int reference_x, int reference_y, int frameCount, int width, int height, int pivot_x, int pivot_y);
 
 /**
  Resets the frame sprite sheet
