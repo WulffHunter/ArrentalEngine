@@ -122,11 +122,14 @@ void AE_Close(AE_WindowBundle* closeWindowBundle)
  */
 void AE_DestroyWindowBundle(AE_WindowBundle* closeWindowBundle)
 {
-    //Close the window and renderer
-    SDL_DestroyRenderer(closeWindowBundle->renderer);
-    SDL_DestroyWindow(closeWindowBundle->window);
-    free(closeWindowBundle);
-    closeWindowBundle = NULL;
+    if (closeWindowBundle != NULL)
+    {
+        //Close the window and renderer
+        SDL_DestroyRenderer(closeWindowBundle->renderer);
+        SDL_DestroyWindow(closeWindowBundle->window);
+        free(closeWindowBundle);
+        closeWindowBundle = NULL;
+    }
 }
 
 /**
