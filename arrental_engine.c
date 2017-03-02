@@ -33,13 +33,13 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
 {
     AE_WindowBundle* output = malloc(sizeof(AE_WindowBundle));
     
-    output->initSuccess = true;
+    output->initSuccess = SDL_TRUE;
     
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
     {
-        //SDL could not be initialized, print a warning and change the initSuccess of output to false
+        //SDL could not be initialized, print a warning and change the initSuccess of output to SDL_FALSE
         printf("SDL could not be initialized. Error: %s\n", SDL_GetError());
-        output->initSuccess = false;
+        output->initSuccess = SDL_FALSE;
     }
     else
     {
@@ -55,7 +55,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
         if (output->window == NULL)
         {
             printf("Window could not be initialized! Error: %s\n", SDL_GetError());
-            output->initSuccess = false;
+            output->initSuccess = SDL_FALSE;
         }
         else
         {
@@ -72,7 +72,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
             if (output->renderer == NULL)
             {
                 printf("Renderer could not be created! Error: %s\n", SDL_GetError());
-                output->initSuccess = false;
+                output->initSuccess = SDL_FALSE;
             }
             else
             {
@@ -85,14 +85,14 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
             if (!(IMG_Init(initImg) & initImg))
             {
                 printf("SDL_image could not be initialized! Error: %s\n", IMG_GetError());
-                output->initSuccess = false;
+                output->initSuccess = SDL_FALSE;
             }
             
             //Initialize SDL_ttf
             if (TTF_Init() == -1)
             {
                 printf("SDL_ttf could not be initialized! Error: %s\n", TTF_GetError());
-                output->initSuccess = false;
+                output->initSuccess = SDL_FALSE;
             }
         }
     }
@@ -333,7 +333,7 @@ AE_LinkedTexture* AE_CreateLinkedTexture(SDL_Texture* texture)
 SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
 {
     //Whether creating a new link to the linkedTexture was successful or not
-    SDL_bool success = false;
+    SDL_bool success = SDL_FALSE;
     
     //If there are no objects referencing a linkedTexture yet
     if (linkedTexture->linkedList == NULL)
@@ -341,7 +341,7 @@ SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholde
         //Make the root reference into the current stakeholder object
         if ((linkedTexture->linkedList = malloc(sizeof(AE_SheetLink))))
         {
-            success = true;
+            success = SDL_TRUE;
         }
         linkedTexture->linkedList->reference = stakeholder_object;
         linkedTexture->linkedList->next = NULL;
@@ -361,7 +361,7 @@ SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholde
         //Create the new reference at the end of the list
         if ((tempSheetLink->next = malloc(sizeof(AE_SheetLink))))
         {
-            success = true;
+            success = SDL_TRUE;
         }
         tempSheetLink->next->reference = stakeholder_object;
         tempSheetLink->next->next = NULL;
@@ -402,7 +402,7 @@ SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakehold
                 }
                 free(tempSheetLink);
                 linkedTexture->references--;
-                return true;
+                return SDL_TRUE;
             }
             else
             {
@@ -412,7 +412,7 @@ SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakehold
         }
     }
     
-    return false;
+    return SDL_FALSE;
 }
 
 /**
@@ -489,7 +489,7 @@ Uint32 AE_LinkedTexture_GetFormat(AE_LinkedTexture* linkedTexture)
  */
 SDL_bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
 {
-    SDL_bool success = false;
+    SDL_bool success = SDL_FALSE;
     
     //If nothing is referencing the linkedTexture
     if (linkedTexture->linkedList == NULL && linkedTexture->references == 0)
@@ -497,7 +497,7 @@ SDL_bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
         //Destroy the texture completely
         SDL_DestroyTexture(linkedTexture->texture);
         free(linkedTexture);
-        success = true;
+        success = SDL_TRUE;
     }
     return success;
 }
@@ -947,7 +947,7 @@ Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite)
  */
 SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step)
 {
-    SDL_bool success = false;
+    SDL_bool success = SDL_FALSE;
     if (sprite->spriteSheet != NULL)
     {
         //If currentFrame is less than 0, loop through the spritesheet (sets the sprite's currentFrame along with it)
@@ -978,7 +978,7 @@ SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y
         
         if ( SDL_RenderCopyEx(renderer, sprite->spriteSheet->texture, &sprite->frames[currentFrame], &sprite->drawRect, sprite->angle, &sprite->pivot, sprite->flip) )
         {
-            success = true;
+            success = SDL_TRUE;
         }
         sprite->currentFrame+=((sprite->frameSpeed/2)*step);
     }
@@ -1019,8 +1019,8 @@ void AE_DestroySprite(AE_Sprite* sprite)
 AE_Timer* AE_Create_Timer()
 {
     AE_Timer* output = malloc(sizeof(AE_Timer));
-    output->isStarted = false;
-    output->isPaused = false;
+    output->isStarted = SDL_FALSE;
+    output->isPaused = SDL_FALSE;
     output->startTime = 0;
     output->pauseTime = 0;
     return output;
@@ -1033,8 +1033,8 @@ AE_Timer* AE_Create_Timer()
  */
 void AE_Timer_Start(AE_Timer* timer)
 {
-    timer->isStarted = true;
-    timer->isPaused = false;
+    timer->isStarted = SDL_TRUE;
+    timer->isPaused = SDL_FALSE;
     timer->startTime = SDL_GetTicks();
     timer->pauseTime = 0;
 }
@@ -1048,7 +1048,7 @@ void AE_Timer_Pause(AE_Timer* timer)
 {
     if (timer->isStarted && !timer->isPaused)
     {
-        timer->isPaused = true;
+        timer->isPaused = SDL_TRUE;
         timer->pauseTime = SDL_GetTicks() - timer->startTime;
     }
 }
@@ -1064,7 +1064,7 @@ void AE_Timer_Resume(AE_Timer* timer)
     if (timer->isStarted && timer->isPaused)
     {
         //Unpause the timer
-        timer->isPaused = false;
+        timer->isPaused = SDL_FALSE;
         //Set the start time to the saved time
         timer->startTime = SDL_GetTicks() - timer->pauseTime;
         timer->pauseTime = 0;
@@ -1078,8 +1078,8 @@ void AE_Timer_Resume(AE_Timer* timer)
  */
 void AE_Timer_Stop(AE_Timer* timer)
 {
-    timer->isStarted = false;
-    timer->isPaused = false;
+    timer->isStarted = SDL_FALSE;
+    timer->isPaused = SDL_FALSE;
     timer->startTime = 0;
     timer->pauseTime = 0;
 }
