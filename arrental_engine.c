@@ -33,9 +33,10 @@
 AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, bool vsync_enabled)
 {
     AE_WindowBundle* output = malloc(sizeof(AE_WindowBundle));
+    
     output->initSuccess = true;
     
-    if (SDL_Init(SDL_INIT_VIDEO)<0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
     {
         //SDL could not be initialized, print a warning and change the initSuccess of output to false
         printf("SDL could not be initialized. Error: %s\n", SDL_GetError());
@@ -595,7 +596,7 @@ void AE_FillSprite(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int referen
     AE_SpriteSetFrameSpeed(sprite, 30);
     
     AE_SpriteSetColor(sprite, NULL, AE_SPRITE_DEFAULT);
-    sprite->alpha = 255;
+    AE_SpriteSetAlpha(sprite, 255);
 }
 
 /**
@@ -700,7 +701,7 @@ void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int 
         for (int i = 0; i<frameCount; i++)
         {
             //If the currently set frame is not frame 0, make the frame the endpoint + 1
-            sprite->frames[i].x = (i == 0) ? reference_x : reference_x + ((temp_width * i) + 1);
+            sprite->frames[i].x = (i == 0) ? reference_x : reference_x + (temp_width * i);
             
             //The frames run along the width of the sprite sheet, so the y remains static
             sprite->frames[i].y = reference_y;
@@ -910,6 +911,28 @@ AE_ColorBundle* AE_SpriteGetColor(AE_Sprite* sprite)
     output->g = sprite->color.g;
     output->b = sprite->color.b;
     return output;
+}
+
+/**
+ Sets the color of the sprite
+ 
+ @param sprite The AE_Sprite whose alpha will be set
+ @param alpha The alpha the AE_Sprite will be set to
+ */
+void AE_SpriteSetAlpha(AE_Sprite* sprite, Uint8 alpha)
+{
+    sprite->alpha = alpha;
+}
+
+/**
+ Gets the alpha modulation of a sprite
+ 
+ @param sprite The AE_Sprite whose alpha will be retrieved
+ @return The alpha modulation of the sprite
+ */
+Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite)
+{
+    return sprite->alpha;
 }
 
 /**

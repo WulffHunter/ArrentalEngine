@@ -413,6 +413,22 @@ void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, AE_Flag dataToK
  */
 AE_ColorBundle* AE_SpriteGetColor(AE_Sprite* sprite);
 
+/**
+ Sets the color of the sprite
+ 
+ @param sprite The AE_Sprite whose alpha will be set
+ @param alpha The alpha the AE_Sprite will be set to
+ */
+void AE_SpriteSetAlpha(AE_Sprite* sprite, Uint8 alpha);
+
+/**
+ Gets the alpha modulation of a sprite
+ 
+ @param sprite The AE_Sprite whose alpha will be retrieved
+ @return The alpha modulation of the sprite
+ */
+Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite);
+
 
 /**
  Renders the sprite on the given renderer
