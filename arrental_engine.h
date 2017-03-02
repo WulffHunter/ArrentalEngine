@@ -37,7 +37,7 @@ typedef struct {
 typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
-    bool initSuccess;
+    SDL_bool initSuccess;
 }AE_WindowBundle;
 
 /**
@@ -49,7 +49,7 @@ typedef struct {
  @param vsync_enabled A boolean for whether you want vsync to be enabled or not
  @return Struct containing a window, a renderer, and a boolean showing whether initialization was successful or not
  */
-AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, bool vsync_enabled);
+AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled);
 
 /**
  Destroys an AE_WindowBundle and closes SDL
@@ -177,7 +177,7 @@ AE_LinkedTexture* AE_CreateLinkedTexture(SDL_Texture* texture);
  @param stakeholder_object The object that will reference the linkedTexture
  @return Whether the object joined the list of objects referencing the linkedTexture or not
  */
-bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_object);
+SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_object);
 /**
  Removes an object from the list of objects that reference a linkedTexture
  
@@ -185,7 +185,7 @@ bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_ob
  @param stakeholder_object The onject that will no longer reference the linkedTexture
  @return Whether the object was removed from the referencing list or not
  */
-bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakeholder_object);
+SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakeholder_object);
 
 /**
  Gets the number of objects referencing a linkedTexture
@@ -225,7 +225,7 @@ Uint32 AE_LinkedTexture_GetFormat(AE_LinkedTexture* linkedTexture);
  @param linkedTexture The linkedTexture to destroy
  @return Whether the linkedTexture was destroyed or not
  */
-bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture);
+SDL_bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture);
 
 /**
  Destroys a linkedTexture and the list of objects referencing it, regardless of whether objects are referencing it or not
@@ -441,7 +441,7 @@ Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite);
  @param step The timestep the sprite will be drawn at
  @return Whether the sprite was successfully rendered or not
  */
-bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step);
+SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step);
 
 /**
  Frees and destroys an AE_Sprite
@@ -465,8 +465,8 @@ void AE_DestroySprite(AE_Sprite* sprite);
 typedef struct {
     Uint32 startTime;
     Uint32 pauseTime;
-    bool isPaused;
-    bool isStarted;
+    SDL_bool isPaused;
+    SDL_bool isStarted;
 }AE_Timer;
 
 /**
@@ -518,7 +518,7 @@ Uint32 AE_Timer_GetTime(AE_Timer* timer);
  @param timer The AE_Timer to be determined whether it is paused or not
  @return Whether the AE_Timer is paused or not
  */
-bool AE_Timer_IsPaused(AE_Timer* timer);
+SDL_bool AE_Timer_IsPaused(AE_Timer* timer);
 
 /**
  Returns whether an AE_Timer is started
@@ -526,7 +526,7 @@ bool AE_Timer_IsPaused(AE_Timer* timer);
  @param timer The AE_Timer to determine whether it is started or not
  @return Whether the AE_Timer is started or not
  */
-bool AE_Timer_IsStarted(AE_Timer* timer);
+SDL_bool AE_Timer_IsStarted(AE_Timer* timer);
 
 //
 //

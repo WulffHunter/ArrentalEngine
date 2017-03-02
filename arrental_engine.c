@@ -30,7 +30,7 @@
  @param vsync_enabled A boolean for whether you want vsync to be enabled or not
  @return Struct containing a window, a renderer, and a boolean showing whether initialization was successful or not
  */
-AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, bool vsync_enabled)
+AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled)
 {
     AE_WindowBundle* output = malloc(sizeof(AE_WindowBundle));
     
@@ -331,10 +331,10 @@ AE_LinkedTexture* AE_CreateLinkedTexture(SDL_Texture* texture)
  @param stakeholder_object The object that will reference the linkedTexture
  @return Whether the object joined the list of objects referencing the linkedTexture or not
  */
-bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
+SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
 {
     //Whether creating a new link to the linkedTexture was successful or not
-    bool success = false;
+    SDL_bool success = false;
     
     //If there are no objects referencing a linkedTexture yet
     if (linkedTexture->linkedList == NULL)
@@ -381,7 +381,7 @@ bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholder_ob
  @param stakeholder_object The onject that will no longer reference the linkedTexture
  @return Whether the object was removed from the referencing list or not
  */
-bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
+SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
 {
     if (linkedTexture->linkedList != NULL)
     {
@@ -488,9 +488,9 @@ Uint32 AE_LinkedTexture_GetFormat(AE_LinkedTexture* linkedTexture)
  @param linkedTexture The linkedTexture to destroy
  @return Whether the linkedTexture was destroyed or not
  */
-bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
+SDL_bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
 {
-    bool success = false;
+    SDL_bool success = false;
     
     //If nothing is referencing the linkedTexture
     if (linkedTexture->linkedList == NULL && linkedTexture->references == 0)
@@ -946,9 +946,9 @@ Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite)
  @param step The timestep the sprite will be drawn at
  @return Whether the sprite was successfully rendered or not
  */
-bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step)
+SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step)
 {
-    bool success = false;
+    SDL_bool success = false;
     if (sprite->spriteSheet != NULL)
     {
         //If currentFrame is less than 0, loop through the spritesheet (sets the sprite's currentFrame along with it)
@@ -1119,7 +1119,7 @@ Uint32 AE_Timer_GetTime(AE_Timer* timer)
  @param timer The AE_Timer to be determined whether it is paused or not
  @return Whether the AE_Timer is paused or not
  */
-bool AE_Timer_IsPaused(AE_Timer* timer)
+SDL_bool AE_Timer_IsPaused(AE_Timer* timer)
 {
     return timer->isStarted && timer->isPaused;
 }
@@ -1130,7 +1130,7 @@ bool AE_Timer_IsPaused(AE_Timer* timer)
  @param timer The AE_Timer to determine whether it is started or not
  @return Whether the AE_Timer is started or not
  */
-bool AE_Timer_IsStarted(AE_Timer* timer)
+SDL_bool AE_Timer_IsStarted(AE_Timer* timer)
 {
     return timer->isStarted;
 }
