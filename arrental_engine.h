@@ -566,16 +566,41 @@ int AE_Random(int min, int max);
 Uint64 AE_RandomSeed();
 
 /**
+ Creates a pseudorandom Uint64 from 4 Uint64. Used for creating random numbers from seeds.
+ 
+ @param seednum_1 A manipulated Uint64
+ @param seednum_2 A manipulated Uint64
+ @param seednum_3 A manipulated Uint64
+ @param seednum_4 A manipulated Uint64
+ @return A Uint64 created by shifting and manipulating the 4 given Uint64's
+ */
+Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, Uint64 seednum_4);
+
+/**
  Gets a pseudorandom number between two numbers based on a given seed. Used for procedural generation: if given the same input numbers, the output will always be the same
  
  @param seed The seed number to be manipulated
  @param x The x upon which the seed number will be manipulated
  @param y The y upon which the seed number will be manipulated
+ @param set A value that manipulates the outcome so that multiple different numbers can be generated for the same x and y
  @param min The min number the output can be
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed(Uint64 seed, int x, int y, int min, int max);
+int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, int max);
+
+/**
+ Gets a pseudorandom number between two numbers based on a given seed. Used for procedural generation: if given the same input numbers, the output will always be the same
+ 
+ @param seed The seed number to be manipulated
+ @param x The x upon which the seed number will be manipulated
+ @param y The y upon which the seed number will be manipulated
+ @param set A value that manipulates the outcome so that multiple different numbers can be generated for the same x and y
+ @param min The min number the output can be
+ @param max The max number the output can be
+ @return The pseudorandom number based on the seed, x, and y
+ */
+int AE_PseudoRandomFromSeed_Uint64(Uint64 seed, Uint64 x, Uint64 y, Uint64 set, int min, int max);
 
 /**
  Returns the distance between two points as an int

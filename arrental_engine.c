@@ -1170,7 +1170,7 @@ Uint8 AE_BlendColorChannel(Uint8 col1, Uint8 col2, Uint8 percentage)
 int AE_Random(int min, int max)
 {
     //If the min and max are the same, return that: else, return the random number
-    return (min != max) ? ((int )(floor(rand() % (max - min)) + min)) : max;
+    return (min != max) ? ((int )(floor(rand() % (max - min)) + min)) : min;
 }
 
 /**
@@ -1184,9 +1184,102 @@ Uint64 AE_RandomSeed()
     Uint64 seed = rand();
     //Bitshift the original by 32 and repeat
     seed = (seed<<32) | rand();
+    //If the seed is 0, recursively find a new seed that isn't 0, and return that nonzero seed
+    if (seed == 0)
+    {
+        seed = AE_RandomSeed();
+    }
     
     return seed;
 }
+
+/**
+ Creates a pseudorandom Uint64 from 4 Uint64. Used for creating random numbers from seeds.
+ 
+ @param seednum_1 A manipulated Uint64
+ @param seednum_2 A manipulated Uint64
+ @param seednum_3 A manipulated Uint64
+ @param seednum_4 A manipulated Uint64
+ @return A Uint64 created by shifting and manipulating the 4 given Uint64's
+ */
+Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, Uint64 seednum_4)
+{
+    //Set the first 8 bytes (8/64)
+    Uint64 finalseed = -seednum_1 % 11;
+    finalseed = finalseed << 1 | (-seednum_1 % 13);
+    finalseed = finalseed << 1 | (-seednum_2 % 11);
+    finalseed = finalseed << 1 | (-seednum_2 % 13);
+    finalseed = finalseed << 1 | (-seednum_3 % 11);
+    finalseed = finalseed << 1 | (-seednum_3 % 13);
+    finalseed = finalseed << 1 | (-seednum_4 % 11);
+    finalseed = finalseed << 1 | (-seednum_4 % 13);
+    //Set the second 8 bytes (16/64)
+    finalseed = finalseed << 1 | (seednum_1 % 7);
+    finalseed = finalseed << 1 | (seednum_1 % 17);
+    finalseed = finalseed << 1 | (seednum_2 % 7);
+    finalseed = finalseed << 1 | (seednum_2 % 17);
+    finalseed = finalseed << 1 | (seednum_3 % 7);
+    finalseed = finalseed << 1 | (seednum_3 % 17);
+    finalseed = finalseed << 1 | (seednum_4 % 7);
+    finalseed = finalseed << 1 | (seednum_4 % 17);
+    //Set the third 8 bytes (24/64)
+    finalseed = finalseed << 1 | (-seednum_1 % 19);
+    finalseed = finalseed << 1 | (-seednum_1 % 23);
+    finalseed = finalseed << 1 | (-seednum_2 % 19);
+    finalseed = finalseed << 1 | (-seednum_2 % 23);
+    finalseed = finalseed << 1 | (-seednum_3 % 19);
+    finalseed = finalseed << 1 | (-seednum_3 % 23);
+    finalseed = finalseed << 1 | (-seednum_4 % 19);
+    finalseed = finalseed << 1 | (-seednum_4 % 23);
+    //Set the fourth 8 bytes (32/64)
+    finalseed = finalseed << 1 | (-seednum_1 % 59);
+    finalseed = finalseed << 1 | (-seednum_1 % 67);
+    finalseed = finalseed << 1 | (-seednum_2 % 59);
+    finalseed = finalseed << 1 | (-seednum_2 % 67);
+    finalseed = finalseed << 1 | (-seednum_3 % 59);
+    finalseed = finalseed << 1 | (-seednum_3 % 67);
+    finalseed = finalseed << 1 | (-seednum_4 % 59);
+    finalseed = finalseed << 1 | (-seednum_4 % 67);
+    //Set the fifth 8 bytes (40/64)
+    finalseed = finalseed << 1 | (-seednum_1 % 89);
+    finalseed = finalseed << 1 | (-seednum_1 % 97);
+    finalseed = finalseed << 1 | (-seednum_2 % 89);
+    finalseed = finalseed << 1 | (-seednum_2 % 97);
+    finalseed = finalseed << 1 | (-seednum_3 % 89);
+    finalseed = finalseed << 1 | (-seednum_3 % 97);
+    finalseed = finalseed << 1 | (-seednum_4 % 89);
+    finalseed = finalseed << 1 | (-seednum_4 % 97);
+    //Set the sixth 8 bytes (48/64)
+    finalseed = finalseed << 1 | (seednum_1 % 61);
+    finalseed = finalseed << 1 | (seednum_1 % 61);
+    finalseed = finalseed << 1 | (seednum_2 % 61);
+    finalseed = finalseed << 1 | (seednum_2 % 67);
+    finalseed = finalseed << 1 | (seednum_3 % 61);
+    finalseed = finalseed << 1 | (seednum_3 % 67);
+    finalseed = finalseed << 1 | (seednum_4 % 61);
+    finalseed = finalseed << 1 | (seednum_4 % 67);
+    //Set the seventh 8 bytes (56/64)
+    finalseed = finalseed << 1 | (7 * -seednum_1 % 41);
+    finalseed = finalseed << 1 | (7 * -seednum_1 % 37);
+    finalseed = finalseed << 1 | (7 * -seednum_2 % 41);
+    finalseed = finalseed << 1 | (7 * -seednum_2 % 37);
+    finalseed = finalseed << 1 | (7 * -seednum_3 % 41);
+    finalseed = finalseed << 1 | (7 * -seednum_3 % 37);
+    finalseed = finalseed << 1 | (7 * -seednum_4 % 41);
+    finalseed = finalseed << 1 | (7 * -seednum_4 % 37);
+    //Set the eighth 8 bytes (64/64)
+    finalseed = finalseed << 1 | (7 * -seednum_1 % 31);
+    finalseed = finalseed << 1 | (7 * -seednum_1 % 101);
+    finalseed = finalseed << 1 | (7 * -seednum_2 % 31);
+    finalseed = finalseed << 1 | (7 * -seednum_2 % 101);
+    finalseed = finalseed << 1 | (7 * -seednum_3 % 31);
+    finalseed = finalseed << 1 | (7 * -seednum_3 % 101);
+    finalseed = finalseed << 1 | (7 * -seednum_4 % 31);
+    finalseed = finalseed << 1 | (7 * -seednum_4 % 101);
+    
+    return finalseed;
+}
+
 
 /**
  Gets a pseudorandom number between two numbers based on a given seed. Used for procedural generation: if given the same input numbers, the output will always be the same
@@ -1194,14 +1287,87 @@ Uint64 AE_RandomSeed()
  @param seed The seed number to be manipulated
  @param x The x upon which the seed number will be manipulated
  @param y The y upon which the seed number will be manipulated
+ @param set A value that manipulates the outcome so that multiple different numbers can be generated for the same x and y
  @param min The min number the output can be
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed(Uint64 seed, int x, int y, int min, int max)
+int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, int max)
 {
+    //Create a shifted number to manipulate the seed value based on the set
+    Uint8 setshift_1 = ((set << x)) | ((Uint8)pow(set,3));
+    Uint8 setshift_2 = ((set << y)) | set;
+    Uint8 setshift_3 = set + x + y - setshift_1;
+    Uint8 setshift_4 = -set - x - y + setshift_2;
+    
+    //Create the final shifted number based on the set
+    Uint8 finalset = -setshift_1 % 7;
+    finalset = finalset << 1 | (-setshift_1 % 17);
+    finalset = finalset << 1 | (-setshift_2 % 7);
+    finalset = finalset << 1 | (-setshift_2 % 17);
+    finalset = finalset << 1 | (-setshift_3 % 7);
+    finalset = finalset << 1 | (-setshift_3 % 17);
+    finalset = finalset << 1 | (-setshift_4 % 7);
+    finalset = finalset << 1 | (-setshift_4 % 17);
+    
+    seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
+    
+    //Create shifted numbers to create pseudorandom numbers by
+    Uint64 seedshift_1 = ((seed << x)) + y;
+    Uint64 seedshift_2 = ((seed << y)) + x;
+    Uint64 seedshift_3 = seed + x + y - seedshift_1;
+    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
+    
+    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    
     //If the min and max are the same, return that: else, return the random number
-    return (min != max) ? ((int )(floor((seed % x % y) % (max - min)) + min)) : max;
+    //return (min != max) ? ((int )(floor(((seed << x) | y << seed) % (max - min)) + min)) : min;
+    return (min != max) ? ((int )(floor(finalseed % (max - min)) + min)) : min;
+}
+
+/**
+ Gets a pseudorandom number between two numbers based on a given seed. Used for procedural generation: if given the same input numbers, the output will always be the same
+ 
+ @param seed The seed number to be manipulated
+ @param x The x upon which the seed number will be manipulated
+ @param y The y upon which the seed number will be manipulated
+ @param set A value that manipulates the outcome so that multiple different numbers can be generated for the same x and y
+ @param min The min number the output can be
+ @param max The max number the output can be
+ @return The pseudorandom number based on the seed, x, and y
+ */
+int AE_PseudoRandomFromSeed_Uint64(Uint64 seed, Uint64 x, Uint64 y, Uint64 set, int min, int max)
+{
+    //Create a shifted number to manipulate the seed value based on the set
+    Uint64 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
+    Uint64 setshift_2 = ((set << y)) | set;
+    Uint64 setshift_3 = set + x + y - setshift_1;
+    Uint64 setshift_4 = -set - x - y + setshift_2;
+    
+    //Create the final shifted number based on the set
+    Uint8 finalset = -setshift_1 % 7;
+    finalset = finalset << 1 | (-setshift_1 % 17);
+    finalset = finalset << 1 | (-setshift_2 % 7);
+    finalset = finalset << 1 | (-setshift_2 % 17);
+    finalset = finalset << 1 | (-setshift_3 % 7);
+    finalset = finalset << 1 | (-setshift_3 % 17);
+    finalset = finalset << 1 | (-setshift_4 % 7);
+    finalset = finalset << 1 | (-setshift_4 % 17);
+    
+    seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
+    
+    //Create shifted numbers to create pseudorandom numbers by
+    Uint64 seedshift_1 = ((seed << x)) + y;
+    Uint64 seedshift_2 = ((seed << y)) + x;
+    Uint64 seedshift_3 = seed + x + y - seedshift_1;
+    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
+    
+    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    
+    
+    //If the min and max are the same, return that: else, return the random number
+    //return (min != max) ? ((int )(floor(((seed << x) | y << seed) % (max - min)) + min)) : min;
+    return (min != max) ? ((int )(floor(finalseed % (max - min)) + min)) : min;
 }
 
 /**
