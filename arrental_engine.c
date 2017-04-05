@@ -1295,7 +1295,7 @@ Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, 
 int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, int max)
 {
     //Create a shifted number to manipulate the seed value based on the set
-    Uint8 setshift_1 = ((set << x)) | ((Uint8)pow(set,3));
+    Uint8 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
     Uint8 setshift_2 = ((set << y)) | set;
     Uint8 setshift_3 = set + x + y - setshift_1;
     Uint8 setshift_4 = -set - x - y + setshift_2;
