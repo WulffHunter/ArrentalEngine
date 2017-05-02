@@ -6,14 +6,14 @@
 //  Copyright © 2017 zapix_games. All rights reserved.
 //
 
+#ifndef arrental_engine_h
+#define arrental_engine_h
+
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifndef arrental_engine_h
-#define arrental_engine_h
 
 /**
  A struct containing red, green, and blue colors

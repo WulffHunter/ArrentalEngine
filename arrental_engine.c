@@ -165,7 +165,13 @@ void AE_CloseSDL()
  */
 Uint32 AE_GetSurfacePixel(SDL_Surface* surface, int x, int y)
 {
-    return ((Uint32*) surface->pixels)[y*(surface->pitch/sizeof(Uint32))+x];
+    SDL_LockSurface(surface);
+    
+    Uint32 output = ((Uint32*) surface->pixels)[y*(surface->pitch/sizeof(Uint32))+x];
+    
+    SDL_UnlockSurface(surface);
+    
+    return output;
 }
 
 /**
@@ -187,8 +193,9 @@ SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path)
     }
     else
     {
-        //Color key the image based on the bottom-left pixel
-        if (SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0, 255, 255)) < 0)
+        //Color key the image based on the bottom-left pixel (CURRENTLY BROKEN: PLEASE USE TRANSPARENT ALPHA FOR BLANK BACKGROUND)
+        //if (SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0, 255, 255)) < 0)
+        if (SDL_SetColorKey(loaded, SDL_TRUE, AE_GetSurfacePixel(loaded, 0, loaded->h-1)) < 0)
         {
             printf("Failed to color key. Error: %s\n", IMG_GetError());
         }
@@ -947,6 +954,7 @@ Uint8 AE_SpriteGetAlpha(AE_Sprite* sprite)
  */
 SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y, int currentFrame, float step)
 {
+    int drawFrame = currentFrame;
     SDL_bool success = SDL_FALSE;
     if (sprite->spriteSheet != NULL)
     {
@@ -957,7 +965,7 @@ SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y
             {
                 sprite->currentFrame = fmodf(sprite->currentFrame,(float)(sprite->frameCount - 1));
             }
-            currentFrame = fmodf(sprite->currentFrame,(float)(sprite->frameCount - 1));
+            drawFrame = fmodf(sprite->currentFrame,(float)(sprite->frameCount - 1));
         }
         //If the currentFrame is larger than the number of frames the sprite has, go to the last frame of the animation, and reset the sprite's currentFrame for the next time it loops
         else if (currentFrame >= sprite->frameCount)
