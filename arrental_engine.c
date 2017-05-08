@@ -1186,10 +1186,10 @@ int AE_Random(int min, int max)
 
  @return The random seed number
  */
-Uint64 AE_RandomSeed()
+uint64_t AE_RandomSeed()
 {
     //Create a random Uint32 seed
-    Uint64 seed = rand();
+    uint64_t seed = rand();
     //Bitshift the original by 32 and repeat
     seed = (seed<<32) | rand();
     //If the seed is 0, recursively find a new seed that isn't 0, and return that nonzero seed
@@ -1202,18 +1202,18 @@ Uint64 AE_RandomSeed()
 }
 
 /**
- Creates a pseudorandom Uint64 from 4 Uint64. Used for creating random numbers from seeds.
+ Creates a pseudorandom uint64_t from 4 uint64_t. Used for creating random numbers from seeds.
  
- @param seednum_1 A manipulated Uint64
- @param seednum_2 A manipulated Uint64
- @param seednum_3 A manipulated Uint64
- @param seednum_4 A manipulated Uint64
- @return A Uint64 created by shifting and manipulating the 4 given Uint64's
+ @param seednum_1 A manipulated uint64_t
+ @param seednum_2 A manipulated uint64_t
+ @param seednum_3 A manipulated uint64_t
+ @param seednum_4 A manipulated uint64_t
+ @return A uint64_t created by shifting and manipulating the 4 given uint64_t's
  */
-Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, Uint64 seednum_4)
+uint64_t AE_CreateFinalSeed(uint64_t seednum_1, uint64_t seednum_2, uint64_t seednum_3, uint64_t seednum_4)
 {
     //Set the first 8 bytes (8/64)
-    Uint64 finalseed = -seednum_1 % 11;
+    uint64_t finalseed = -seednum_1 % 11;
     finalseed = finalseed << 1 | (-seednum_1 % 13);
     finalseed = finalseed << 1 | (-seednum_2 % 11);
     finalseed = finalseed << 1 | (-seednum_2 % 13);
@@ -1300,10 +1300,10 @@ Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, 
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, int max)
+int AE_PseudoRandomFromSeed_Int(uint64_t seed, int x, int y, uint64_t set, int min, int max)
 {
     //Create a shifted number to manipulate the seed value based on the set
-    Uint8 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
+    Uint8 setshift_1 = ((set << x)) | ((uint64_t)pow(set,3));
     Uint8 setshift_2 = ((set << y)) | set;
     Uint8 setshift_3 = set + x + y - setshift_1;
     Uint8 setshift_4 = -set - x - y + setshift_2;
@@ -1321,12 +1321,12 @@ int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, 
     seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
     
     //Create shifted numbers to create pseudorandom numbers by
-    Uint64 seedshift_1 = ((seed << x)) + y;
-    Uint64 seedshift_2 = ((seed << y)) + x;
-    Uint64 seedshift_3 = seed + x + y - seedshift_1;
-    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
+    uint64_t seedshift_1 = ((seed << x)) + y;
+    uint64_t seedshift_2 = ((seed << y)) + x;
+    uint64_t seedshift_3 = seed + x + y - seedshift_1;
+    uint64_t seedshift_4 = -seed - x - y + seedshift_2;
     
-    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    uint64_t finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
     
     //If the min and max are the same, return that: else, return the random number
     //return (min != max) ? ((int )(floor(((seed << x) | y << seed) % (max - min)) + min)) : min;
@@ -1344,13 +1344,13 @@ int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, 
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed_Uint64(Uint64 seed, Uint64 x, Uint64 y, Uint64 set, int min, int max)
+int AE_PseudoRandomFromSeed_Uint64(uint64_t seed, uint64_t x, uint64_t y, uint64_t set, int min, int max)
 {
     //Create a shifted number to manipulate the seed value based on the set
-    Uint64 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
-    Uint64 setshift_2 = ((set << y)) | set;
-    Uint64 setshift_3 = set + x + y - setshift_1;
-    Uint64 setshift_4 = -set - x - y + setshift_2;
+    uint64_t setshift_1 = ((set << x)) | ((uint64_t)pow(set,3));
+    uint64_t setshift_2 = ((set << y)) | set;
+    uint64_t setshift_3 = set + x + y - setshift_1;
+    uint64_t setshift_4 = -set - x - y + setshift_2;
     
     //Create the final shifted number based on the set
     Uint8 finalset = -setshift_1 % 7;
@@ -1365,12 +1365,12 @@ int AE_PseudoRandomFromSeed_Uint64(Uint64 seed, Uint64 x, Uint64 y, Uint64 set, 
     seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
     
     //Create shifted numbers to create pseudorandom numbers by
-    Uint64 seedshift_1 = ((seed << x)) + y;
-    Uint64 seedshift_2 = ((seed << y)) + x;
-    Uint64 seedshift_3 = seed + x + y - seedshift_1;
-    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
+    uint64_t seedshift_1 = ((seed << x)) + y;
+    uint64_t seedshift_2 = ((seed << y)) + x;
+    uint64_t seedshift_3 = seed + x + y - seedshift_1;
+    uint64_t seedshift_4 = -seed - x - y + seedshift_2;
     
-    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    uint64_t finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
     
     
     //If the min and max are the same, return that: else, return the random number
@@ -1411,6 +1411,30 @@ float AE_FloatBase(float input)
         output = ceilf(input);
     }
     return output;
+}
+
+/**
+ Returns the horizontal length of a line of a given length on a given angle
+
+ @param length The length of the line whose horizontal component will be found
+ @param direction The angle of the line whose horizontal component will be found
+ @return The precise length of the horizontal component of the given line
+ */
+long double AE_Lengthdir_X(int length, float direction)
+{
+    return (long double)(sinf(direction)*length);
+}
+
+/**
+ Returns the vertical length of a line of a given length on a given angle
+ 
+ @param length The length of the line whose vertical component will be found
+ @param direction The angle of the line whose vertical component will be found
+ @return The precise length of the vertical component of the given line
+ */
+long double AE_Lengthdir_Y(int length, float direction)
+{
+    return (long double)(cosf(direction)*length);
 }
 
 //

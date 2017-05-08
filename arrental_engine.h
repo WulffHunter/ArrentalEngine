@@ -621,6 +621,24 @@ int AE_PointDistance(int x1, int y1, int x2, int y2);
  */
 float AE_FloatBase(float input);
 
+/**
+ Returns the horizontal length of a line of a given length on a given angle
+ 
+ @param length The length of the line whose horizontal component will be found
+ @param direction The angle of the line whose horizontal component will be found
+ @return The precise length of the horizontal component of the given line
+ */
+long double AE_Lengthdir_X(int length, float direction);
+
+/**
+ Returns the vertical length of a line of a given length on a given angle
+ 
+ @param length The length of the line whose vertical component will be found
+ @param direction The angle of the line whose vertical component will be found
+ @return The precise length of the vertical component of the given line
+ */
+long double AE_Lengthdir_Y(int length, float direction);
+
 //
 //
 //End: General Functions
