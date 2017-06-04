@@ -31,7 +31,7 @@
  */
 AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled)
 {
-    AE_WindowBundle* output = malloc(sizeof(AE_WindowBundle));
+    AE_WindowBundle* output = SDL_malloc(sizeof(AE_WindowBundle));
     
     output->initSuccess = SDL_TRUE;
     
@@ -127,7 +127,7 @@ void AE_DestroyWindowBundle(AE_WindowBundle* closeWindowBundle)
         //Close the window and renderer
         SDL_DestroyRenderer(closeWindowBundle->renderer);
         SDL_DestroyWindow(closeWindowBundle->window);
-        free(closeWindowBundle);
+        SDL_free(closeWindowBundle);
         closeWindowBundle = NULL;
     }
 }
@@ -323,7 +323,7 @@ Uint32 AE_TextureGetFormat(SDL_Texture* texture)
  */
 AE_LinkedTexture* AE_CreateLinkedTexture(SDL_Texture* texture)
 {
-    AE_LinkedTexture* output = malloc(sizeof(AE_LinkedTexture));
+    AE_LinkedTexture* output = SDL_malloc(sizeof(AE_LinkedTexture));
     output->texture = texture;
     output->linkedList = NULL;
     output->references = 0;
@@ -346,7 +346,7 @@ SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholde
     if (linkedTexture->linkedList == NULL)
     {
         //Make the root reference into the current stakeholder object
-        if ((linkedTexture->linkedList = malloc(sizeof(AE_SheetLink))))
+        if ((linkedTexture->linkedList = SDL_malloc(sizeof(AE_SheetLink))))
         {
             success = SDL_TRUE;
         }
@@ -366,7 +366,7 @@ SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholde
             tempSheetLink = tempSheetLink->next;
         }
         //Create the new reference at the end of the list
-        if ((tempSheetLink->next = malloc(sizeof(AE_SheetLink))))
+        if ((tempSheetLink->next = SDL_malloc(sizeof(AE_SheetLink))))
         {
             success = SDL_TRUE;
         }
@@ -407,7 +407,7 @@ SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakehold
                 {
                     prevSheetLink->next = tempSheetLink->next;
                 }
-                free(tempSheetLink);
+                SDL_free(tempSheetLink);
                 linkedTexture->references--;
                 return SDL_TRUE;
             }
@@ -503,7 +503,7 @@ SDL_bool AE_DestroyLinkedTexture(AE_LinkedTexture* linkedTexture)
     {
         //Destroy the texture completely
         SDL_DestroyTexture(linkedTexture->texture);
-        free(linkedTexture);
+        SDL_free(linkedTexture);
         success = SDL_TRUE;
     }
     return success;
@@ -525,11 +525,11 @@ void AE_DestroyLinkedTexture_Unsafe(AE_LinkedTexture* linkedTexture)
         {
             freeSheetLink = tempSheetLink;
             tempSheetLink = tempSheetLink->next;
-            free(freeSheetLink);
+            SDL_free(freeSheetLink);
         }
     }
     SDL_DestroyTexture(linkedTexture->texture);
-    free(linkedTexture);
+    SDL_free(linkedTexture);
 }
 
 
@@ -560,7 +560,7 @@ void AE_DestroyLinkedTexture_Unsafe(AE_LinkedTexture* linkedTexture)
  */
 AE_Sprite* AE_CreateSprite(AE_LinkedTexture* spriteSheet, int reference_x, int reference_y, int frameCount, int width, int height, int pivot_x, int pivot_y)
 {
-    AE_Sprite* output = malloc(sizeof(AE_Sprite));
+    AE_Sprite* output = SDL_malloc(sizeof(AE_Sprite));
     
     //Offloads work to another function for modularity
     AE_FillSprite(output, spriteSheet, reference_x, reference_y, frameCount, width, height, pivot_x, pivot_y);
@@ -677,7 +677,7 @@ void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int 
         //Free any leftover frame data and make the sprite point at NULL frames
         if (sprite->frames != NULL)
         {
-            free(sprite->frames);
+            SDL_free(sprite->frames);
         }
         sprite->frames = NULL;
     }
@@ -690,11 +690,11 @@ void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int 
             //Free any leftover frame data and make the sprite point at NULL frames
             SDL_Rect* temp_frames = sprite->frames;
             sprite->frames = NULL;
-            free(&temp_frames);
+            SDL_free(&temp_frames);
         }
         if (sprite->frames == NULL)
         {
-            sprite->frames = malloc(sizeof(SDL_Rect)*frameCount);
+            sprite->frames = SDL_malloc(sizeof(SDL_Rect)*frameCount);
             for (int i = 0; i<frameCount; i++)
             {
                 sprite->frames[i].x = 0;
@@ -912,7 +912,7 @@ void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, AE_Flag dataToK
 AE_ColorBundle* AE_SpriteGetColor(AE_Sprite* sprite)
 {
     //Create a new AE_ColorBundle and fill with the given sprite's colors
-    AE_ColorBundle* output = malloc(sizeof(AE_ColorBundle));
+    AE_ColorBundle* output = SDL_malloc(sizeof(AE_ColorBundle));
     output->r = sprite->color.r;
     output->g = sprite->color.g;
     output->b = sprite->color.b;
@@ -1001,8 +1001,8 @@ SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y
 void AE_DestroySprite(AE_Sprite* sprite)
 {
     AE_LinkedTexture_Leave(sprite->spriteSheet, sprite);
-    free(sprite->frames);
-    free(sprite);
+    SDL_free(sprite->frames);
+    SDL_free(sprite);
     sprite = NULL;
 }
 
@@ -1026,7 +1026,7 @@ void AE_DestroySprite(AE_Sprite* sprite)
  */
 AE_Timer* AE_Create_Timer()
 {
-    AE_Timer* output = malloc(sizeof(AE_Timer));
+    AE_Timer* output = SDL_malloc(sizeof(AE_Timer));
     output->isStarted = SDL_FALSE;
     output->isPaused = SDL_FALSE;
     output->startTime = 0;
@@ -1178,7 +1178,7 @@ Uint8 AE_BlendColorChannel(Uint8 col1, Uint8 col2, Uint8 percentage)
 int AE_Random(int min, int max)
 {
     //If the min and max are the same, return that: else, return the random number
-    return (min != max) ? ((int )(floor(rand() % (max - min)) + min)) : min;
+    return (min != max) ? ((int )(SDL_floor(rand() % (max - min)) + min)) : min;
 }
 
 /**
@@ -1330,7 +1330,7 @@ int AE_PseudoRandomFromSeed_Int(uint64_t seed, int x, int y, uint64_t set, int m
     
     //If the min and max are the same, return that: else, return the random number
     //return (min != max) ? ((int )(floor(((seed << x) | y << seed) % (max - min)) + min)) : min;
-    return (min != max) ? ((int )(floor(finalseed % (max - min)) + min)) : min;
+    return (min != max) ? ((int )(SDL_floor(finalseed % (max - min)) + min)) : min;
 }
 
 /**
@@ -1393,6 +1393,21 @@ int AE_PointDistance(int x1, int y1, int x2, int y2)
 }
 
 /**
+ Returns the distance between two points as a double
+ 
+ @param x1 The x of the first point
+ @param y1 The y of the first point
+ @param x2 The x of the second point
+ @param y2 The y of the second point
+ @return The distance between two points as a double
+ */
+double AE_PointDistance_D(uint64_t x1, uint64_t y1, uint64_t x2, uint64_t y2)
+{
+    return SDL_sqrt((double)(pow((x1 - x2), 2) + pow((y1 - y2), 2)));
+}
+
+
+/**
  Returns a float rounded to floor or ceil depending on if it's less than 0
 
  @param input The original float
@@ -1404,11 +1419,11 @@ float AE_FloatBase(float input)
     
     if (input < 0)
     {
-        output = floorf(input);
+        output = SDL_floor((double)input);
     }
     else
     {
-        output = ceilf(input);
+        output = SDL_ceil((double)input);
     }
     return output;
 }
@@ -1422,7 +1437,7 @@ float AE_FloatBase(float input)
  */
 long double AE_Lengthdir_X(int length, float direction)
 {
-    return (long double)(sinf(direction)*length);
+    return (long double)(SDL_sin(direction)*length);
 }
 
 /**
@@ -1434,7 +1449,33 @@ long double AE_Lengthdir_X(int length, float direction)
  */
 long double AE_Lengthdir_Y(int length, float direction)
 {
-    return (long double)(cosf(direction)*length);
+    return (long double)(SDL_cos(direction)*length);
+}
+
+/**
+ Returns whether a vector belonging to a point (x1, y1) is clockwise to a vector belonging to another point (x2, y2)
+ 
+ @param x1 The horizontal value of the point on a vector being tested
+ @param y1 The vertical value of the point on a vector being tested
+ @param x2 The horizontal value of the point on a vector
+ @param y2 The vertical value of the point on a vector
+ @return Whether vector (x1, y1) is clockwise to (x2, y2)
+ */
+SDL_bool AE_VectorIsClockwise(double x1, double y1, double x2, double y2)
+{
+    return (((x1 * y2) + (x2 * y1)) > 0);
+}
+
+/**
+ Returns the length of a vector designated by the endpoint
+
+ @param x The horizontal distance of the point from the center
+ @param y The vertical distance of the point from the center
+ @return The length of the vector designated by the x and y
+ */
+double AE_VectorLength(double x, double y)
+{
+    return SDL_sqrt((SDL_pow(x, 2) + SDL_pow(y, 2)));
 }
 
 //
