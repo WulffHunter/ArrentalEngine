@@ -623,7 +623,7 @@ void AE_FillSprite(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int referen
  @param frame_height The height of the new frames
  @param dataToKeep Whether to keep the previous width or height, or neither
  */
-void AE_SpriteSetSpriteSheet(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int frameCount, int reference_x, int reference_y, int frame_width, int frame_height, AE_Flag dataToKeep)
+void AE_SpriteSetSpriteSheet(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, int frameCount, int reference_x, int reference_y, int frame_width, int frame_height, int dataToKeep)
 {
     if (sprite->spriteSheet != NULL)
     {
@@ -648,7 +648,7 @@ void AE_SpriteSetSpriteSheet(AE_Sprite* sprite, AE_LinkedTexture* spriteSheet, i
  @param frame_height The height of the new frames
  @param dataToKeep Whether you want to keep the width, height, or neither
  */
-void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int reference_y, int frame_width, int frame_height, AE_Flag dataToKeep)
+void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int reference_y, int frame_width, int frame_height, int dataToKeep)
 {
     //Set the sprite framecount
     sprite->frameCount = frameCount;
@@ -733,7 +733,7 @@ void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int 
  @param pivot_y The y of the new pivot
  @param dataToKeep Which pivot point attributes will be overwritten: x, y, both, or sets the pivot to the default position (centerpoint)
  */
-void AE_SpriteSetPivot(AE_Sprite* sprite, int pivot_x, int pivot_y, AE_Flag dataToKeep)
+void AE_SpriteSetPivot(AE_Sprite* sprite, int pivot_x, int pivot_y, int dataToKeep)
 {
     //If you're keeping the original pivot x, set the pivot y to the given y
     if (dataToKeep != AE_SPRITE_KEEP_X && dataToKeep != AE_SPRITE_DEFAULT)
@@ -783,7 +783,7 @@ void AE_SpriteSetFlip(AE_Sprite* sprite, SDL_RendererFlip flip)
  @param y_scale The new scale on the y axis
  @param dataToKeep Which scale attributes will be overwritten: x scale, y scale, both, or sets the both scales to the default size (1)
  */
-void AE_SpriteSetScale(AE_Sprite* sprite, float x_scale, float y_scale, AE_Flag dataToKeep)
+void AE_SpriteSetScale(AE_Sprite* sprite, float x_scale, float y_scale, int dataToKeep)
 {
     //Set a drawRect pointer to the sprite's drawRect for less dereferencing
     SDL_Rect* drawRect = &sprite->drawRect;
@@ -887,7 +887,7 @@ void AE_SpriteSetFrameSpeed(AE_Sprite* sprite, float frameSpeed)
  @param color The color the AE_Sprite will be set to
  @param dataToKeep Which preexisting color values to keep (red, green, blue) or set the color values to default color white
  */
-void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, AE_Flag dataToKeep)
+void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, int dataToKeep)
 {
     if (dataToKeep != AE_SPRITE_KEEP_R && dataToKeep != AE_SPRITE_DEFAULT && color != NULL)
     {
