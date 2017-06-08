@@ -10,8 +10,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
-#include <stdio.h>
-#include <string.h>
 #include <tgmath.h>
 
 //
@@ -38,7 +36,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
     {
         //SDL could not be initialized, print a warning and change the initSuccess of output to SDL_FALSE
-        printf("SDL could not be initialized. Error: %s\n", SDL_GetError());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Intialization failiure", "SDL has failed to initialize. Arrental Engine cannot initialize", NULL);
         output->initSuccess = SDL_FALSE;
     }
     else
@@ -46,7 +44,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
         //Linear texture filtering
         if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
         {
-            printf("Linear texture filtering could not be enabled! Error: %s\n", SDL_GetError());
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Linear texture filtering error", "Linear texture filtering could not be enabled!", NULL);
         }
         
         //Create the output's window
@@ -54,7 +52,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
         
         if (output->window == NULL)
         {
-            printf("Window could not be initialized! Error: %s\n", SDL_GetError());
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window Initialization Error", "SDL Window could not be initialized. Arrental Engine has failed to initialize.", NULL);
             output->initSuccess = SDL_FALSE;
         }
         else
@@ -71,7 +69,7 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
             
             if (output->renderer == NULL)
             {
-                printf("Renderer could not be created! Error: %s\n", SDL_GetError());
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Renderer Initialization Error", "SDL Renderer could not be initialized. Arrental Engine has failed to initialize.", NULL);
                 output->initSuccess = SDL_FALSE;
             }
             else
@@ -84,14 +82,14 @@ AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHei
             int initImg = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
             if (!(IMG_Init(initImg) & initImg))
             {
-                printf("SDL_image could not be initialized! Error: %s\n", IMG_GetError());
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_IMG Initialization Error", "SDL_IMG could not be initialized. Arrental Engine has failed to initialize.", NULL);
                 output->initSuccess = SDL_FALSE;
             }
             
             //Initialize SDL_ttf
             if (TTF_Init() == -1)
             {
-                printf("SDL_ttf could not be initialized! Error: %s\n", TTF_GetError());
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_TTF Initialization Error", "SDL_TTF could not be initialized. Arrental Engine has failed to initialize.", NULL);
                 output->initSuccess = SDL_FALSE;
             }
         }
@@ -189,7 +187,11 @@ SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path)
     
     if (loaded == NULL)
     {
-        printf("Cannot load image at %s! Error: %s\n", path, IMG_GetError());
+        char* errormsg_p1 = "Cannot load image at:";
+        char* errormsg = SDL_malloc(sizeof(char) * (SDL_strlen(errormsg_p1) + SDL_strlen(path)));
+        SDL_strlcat(errormsg, errormsg_p1, SDL_strlen(errormsg_p1));
+        SDL_strlcat(errormsg, path, SDL_strlen(path));
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Image loading error", errormsg, NULL);
     }
     else
     {
@@ -197,13 +199,17 @@ SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path)
         //if (SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0, 255, 255)) < 0)
         if (SDL_SetColorKey(loaded, SDL_TRUE, AE_GetSurfacePixel(loaded, 0, loaded->h-1)) < 0)
         {
-            printf("Failed to color key. Error: %s\n", IMG_GetError());
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Color key error", "Failed to color key", NULL);
         }
         //Create a texture from the surface
         output = SDL_CreateTextureFromSurface(renderer, loaded);
         if (output == NULL)
         {
-            printf("Surface could not be converted to texture from image %s. Error: %s\n", path, IMG_GetError());
+            char* errormsg_p1 = "Surface could not be converted to texture from image: ";
+            char* errormsg = SDL_malloc(sizeof(char) * (SDL_strlen(errormsg_p1) + SDL_strlen(path)));
+            SDL_strlcat(errormsg, errormsg_p1, SDL_strlen(errormsg_p1));
+            SDL_strlcat(errormsg, path, SDL_strlen(path));
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Surface conversion error", errormsg, NULL);
         }
         //Destroy original surface
         SDL_FreeSurface(loaded);
@@ -232,7 +238,7 @@ SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, char
     //If nothing was loaded
     if (loaded == NULL)
     {
-        printf("Cannot load texture from text! Error: %s\n", TTF_GetError());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text loading error", "Cannot load texture from text", NULL);
     }
     else
     {
@@ -241,7 +247,7 @@ SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, char
         //If no texture was created
         if (output == NULL)
         {
-            printf("Texture could not be created from text. Error: %s\n", SDL_GetError());
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Text creation error", "Texture could not be created from text", NULL);
         }
     }
     //Free the original surface
@@ -1186,10 +1192,10 @@ int AE_Random(int min, int max)
 
  @return The random seed number
  */
-uint64_t AE_RandomSeed()
+Uint64 AE_RandomSeed()
 {
     //Create a random Uint32 seed
-    uint64_t seed = rand();
+    Uint64 seed = rand();
     //Bitshift the original by 32 and repeat
     seed = (seed<<32) | rand();
     //If the seed is 0, recursively find a new seed that isn't 0, and return that nonzero seed
@@ -1202,18 +1208,18 @@ uint64_t AE_RandomSeed()
 }
 
 /**
- Creates a pseudorandom uint64_t from 4 uint64_t. Used for creating random numbers from seeds.
+ Creates a pseudorandom Uint64 from 4 Uint64. Used for creating random numbers from seeds.
  
- @param seednum_1 A manipulated uint64_t
- @param seednum_2 A manipulated uint64_t
- @param seednum_3 A manipulated uint64_t
- @param seednum_4 A manipulated uint64_t
- @return A uint64_t created by shifting and manipulating the 4 given uint64_t's
+ @param seednum_1 A manipulated Uint64
+ @param seednum_2 A manipulated Uint64
+ @param seednum_3 A manipulated Uint64
+ @param seednum_4 A manipulated Uint64
+ @return A Uint64 created by shifting and manipulating the 4 given Uint64's
  */
-uint64_t AE_CreateFinalSeed(uint64_t seednum_1, uint64_t seednum_2, uint64_t seednum_3, uint64_t seednum_4)
+Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, Uint64 seednum_4)
 {
     //Set the first 8 bytes (8/64)
-    uint64_t finalseed = -seednum_1 % 11;
+    Uint64 finalseed = -seednum_1 % 11;
     finalseed = finalseed << 1 | (-seednum_1 % 13);
     finalseed = finalseed << 1 | (-seednum_2 % 11);
     finalseed = finalseed << 1 | (-seednum_2 % 13);
@@ -1300,10 +1306,10 @@ uint64_t AE_CreateFinalSeed(uint64_t seednum_1, uint64_t seednum_2, uint64_t see
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed_Int(uint64_t seed, int x, int y, uint64_t set, int min, int max)
+int AE_PseudoRandomFromSeed_Int(Uint64 seed, int x, int y, Uint64 set, int min, int max)
 {
     //Create a shifted number to manipulate the seed value based on the set
-    Uint8 setshift_1 = ((set << x)) | ((uint64_t)pow(set,3));
+    Uint8 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
     Uint8 setshift_2 = ((set << y)) | set;
     Uint8 setshift_3 = set + x + y - setshift_1;
     Uint8 setshift_4 = -set - x - y + setshift_2;
@@ -1321,12 +1327,12 @@ int AE_PseudoRandomFromSeed_Int(uint64_t seed, int x, int y, uint64_t set, int m
     seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
     
     //Create shifted numbers to create pseudorandom numbers by
-    uint64_t seedshift_1 = ((seed << x)) + y;
-    uint64_t seedshift_2 = ((seed << y)) + x;
-    uint64_t seedshift_3 = seed + x + y - seedshift_1;
-    uint64_t seedshift_4 = -seed - x - y + seedshift_2;
+    Uint64 seedshift_1 = ((seed << x)) + y;
+    Uint64 seedshift_2 = ((seed << y)) + x;
+    Uint64 seedshift_3 = seed + x + y - seedshift_1;
+    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
     
-    uint64_t finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
     
     //If the min and max are the same, return that: else, return the random number
     //return (min != max) ? ((int )(floor(((seed << x) | y << seed) % (max - min)) + min)) : min;
@@ -1344,13 +1350,13 @@ int AE_PseudoRandomFromSeed_Int(uint64_t seed, int x, int y, uint64_t set, int m
  @param max The max number the output can be
  @return The pseudorandom number based on the seed, x, and y
  */
-int AE_PseudoRandomFromSeed_Uint64(uint64_t seed, uint64_t x, uint64_t y, uint64_t set, int min, int max)
+int AE_PseudoRandomFromSeed_Uint64(Uint64 seed, Uint64 x, Uint64 y, Uint64 set, int min, int max)
 {
     //Create a shifted number to manipulate the seed value based on the set
-    uint64_t setshift_1 = ((set << x)) | ((uint64_t)pow(set,3));
-    uint64_t setshift_2 = ((set << y)) | set;
-    uint64_t setshift_3 = set + x + y - setshift_1;
-    uint64_t setshift_4 = -set - x - y + setshift_2;
+    Uint64 setshift_1 = ((set << x)) | ((Uint64)pow(set,3));
+    Uint64 setshift_2 = ((set << y)) | set;
+    Uint64 setshift_3 = set + x + y - setshift_1;
+    Uint64 setshift_4 = -set - x - y + setshift_2;
     
     //Create the final shifted number based on the set
     Uint8 finalset = -setshift_1 % 7;
@@ -1365,12 +1371,12 @@ int AE_PseudoRandomFromSeed_Uint64(uint64_t seed, uint64_t x, uint64_t y, uint64
     seed = seed | AE_CreateFinalSeed(setshift_1, setshift_2, setshift_3, setshift_4);
     
     //Create shifted numbers to create pseudorandom numbers by
-    uint64_t seedshift_1 = ((seed << x)) + y;
-    uint64_t seedshift_2 = ((seed << y)) + x;
-    uint64_t seedshift_3 = seed + x + y - seedshift_1;
-    uint64_t seedshift_4 = -seed - x - y + seedshift_2;
+    Uint64 seedshift_1 = ((seed << x)) + y;
+    Uint64 seedshift_2 = ((seed << y)) + x;
+    Uint64 seedshift_3 = seed + x + y - seedshift_1;
+    Uint64 seedshift_4 = -seed - x - y + seedshift_2;
     
-    uint64_t finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
+    Uint64 finalseed = AE_CreateFinalSeed(seedshift_1, seedshift_2, seedshift_3, seedshift_4);
     
     
     //If the min and max are the same, return that: else, return the random number
@@ -1401,7 +1407,7 @@ int AE_PointDistance(int x1, int y1, int x2, int y2)
  @param y2 The y of the second point
  @return The distance between two points as a double
  */
-double AE_PointDistance_D(uint64_t x1, uint64_t y1, uint64_t x2, uint64_t y2)
+double AE_PointDistance_D(Uint64 x1, Uint64 y1, Uint64 x2, Uint64 y2)
 {
     return SDL_sqrt((double)(pow((x1 - x2), 2) + pow((y1 - y2), 2)));
 }
