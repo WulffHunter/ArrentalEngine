@@ -27,7 +27,7 @@
  @param vsync_enabled A boolean for whether you want vsync to be enabled or not
  @return Struct containing a window, a renderer, and a boolean showing whether initialization was successful or not
  */
-AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled)
+AE_WindowBundle* AE_Initialize(const char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled)
 {
     AE_WindowBundle* output = SDL_malloc(sizeof(AE_WindowBundle));
     
@@ -179,7 +179,7 @@ Uint32 AE_GetSurfacePixel(SDL_Surface* surface, int x, int y)
  @param path The pathname of the file to be opened
  @return The loaded SDL_Texture
  */
-SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path)
+SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, const char* path)
 {   
     //Load a surface from the given path
     SDL_Surface* loaded = IMG_Load(path);
@@ -228,7 +228,7 @@ SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path)
  @param textColor The color of the text to be rendered
  @return The SDL_Texture containing the rendered text
  */
-SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, char* text, SDL_Color textColor)
+SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color textColor)
 {
     //Render the text onto a surface
     SDL_Surface* loaded = TTF_RenderText_Solid(font, text, textColor);

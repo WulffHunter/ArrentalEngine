@@ -46,7 +46,7 @@ typedef struct {
  @param vsync_enabled A boolean for whether you want vsync to be enabled or not
  @return Struct containing a window, a renderer, and a boolean showing whether initialization was successful or not
  */
-AE_WindowBundle* AE_Initialize(char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled);
+AE_WindowBundle* AE_Initialize(const char* windowTitle, int screenWidth, int screenHeight, SDL_bool vsync_enabled);
 
 /**
  Destroys an AE_WindowBundle and closes SDL
@@ -96,7 +96,7 @@ Uint32 AE_GetSurfacePixel(SDL_Surface* surface, int x, int y);
  @param path The pathname of the file to be opened
  @return The loaded SDL_Texture
  */
-SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path);
+SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, const char* path);
 
 //Loads a texture from given text
 //return: the text texture
@@ -110,7 +110,7 @@ SDL_Texture* AE_LoadTextureFromFile(SDL_Renderer* renderer, char* path);
  @return The SDL_Texture containing the rendered text
  */
 
-SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, char* text, SDL_Color textColor);
+SDL_Texture* AE_LoadTextureFromText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color textColor);
 
 /**
  A wrapper function to get the width of an SDL_Texture
