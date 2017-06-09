@@ -337,6 +337,22 @@ AE_LinkedTexture* AE_CreateLinkedTexture(SDL_Texture* texture)
 }
 
 /**
+ Creates a new linkedTexture from an SDL_Texture from a given pathname with an empty list of referencing objects
+ 
+ @param renderer The renderer which will generate the new Texture
+ @param path The pathname of the file to be loaded
+ @return The linkedTexture with the SDL_Texture as its texture and an empty list of referencing objects
+ */
+AE_LinkedTexture* AE_LinkedTexture_CreateFromFile(SDL_Renderer* renderer, const char* path)
+{
+    AE_LinkedTexture* output = SDL_malloc(sizeof(AE_LinkedTexture));
+    output->texture = AE_LoadTextureFromFile(renderer, path);
+    output->linkedList = NULL;
+    output->references = 0;
+    return output;
+}
+
+/**
  Adds an object to the list of objects referencing a linkedTexture
 
  @param linkedTexture The linkedTexture that the object would like to reference
