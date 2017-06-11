@@ -1,5 +1,5 @@
 # ArrentalEngine
-A simple, cross-platform SDL2.0 2D wrapper/game engine written in pure C.
+A simple, cross-platform SDL2.0 2D wrapper/library  written in pure C.
 
 # What it does
 
