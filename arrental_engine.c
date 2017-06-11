@@ -717,13 +717,6 @@ void AE_SpriteSetFrames(AE_Sprite* sprite, int frameCount, int reference_x, int 
         if (sprite->frames == NULL)
         {
             sprite->frames = SDL_malloc(sizeof(SDL_Rect)*frameCount);
-            for (int i = 0; i<frameCount; i++)
-            {
-                sprite->frames[i].x = 0;
-                sprite->frames[i].y = 0;
-                sprite->frames[i].w = 0;
-                sprite->frames[i].h = 0;
-            }
         }
         //For each frame in the array, set the frame attributes up
         for (int i = 0; i<frameCount; i++)
