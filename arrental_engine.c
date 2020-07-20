@@ -33,7 +33,7 @@ AE_WindowBundle* AE_Initialize(const char* windowTitle, int screenWidth, int scr
     
     output->initSuccess = SDL_TRUE;
     
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
+    if (SDL_Init(SDL_INIT_EVERYTHING)<0)
     {
         //SDL could not be initialized, print a warning and change the initSuccess of output to SDL_FALSE
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Intialization failiure", "SDL has failed to initialize. Arrental Engine cannot initialize", NULL);
@@ -406,7 +406,7 @@ SDL_bool AE_LinkedTexture_Join(AE_LinkedTexture* linkedTexture, void* stakeholde
  Removes an object from the list of objects that reference a linkedTexture
 
  @param linkedTexture The linked texture that the object is removing itself from
- @param stakeholder_object The onject that will no longer reference the linkedTexture
+ @param stakeholder_object The object that will no longer reference the linkedTexture
  @return Whether the object was removed from the referencing list or not
  */
 SDL_bool AE_LinkedTexture_Leave(AE_LinkedTexture* linkedTexture, void* stakeholder_object)
@@ -898,6 +898,12 @@ void AE_SpriteSetFrameSpeed(AE_Sprite* sprite, float frameSpeed)
  */
 void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, int dataToKeep)
 {
+	if (dataToKeep == AE_SPRITE_DEFAULT)
+    {
+        sprite->color.r = 255;
+        sprite->color.g = 255;
+        sprite->color.b = 255;
+    }
     if (dataToKeep != AE_SPRITE_KEEP_R && dataToKeep != AE_SPRITE_DEFAULT && color != NULL)
     {
         sprite->color.r = color->r;
@@ -909,12 +915,6 @@ void AE_SpriteSetColor(AE_Sprite* sprite, AE_ColorBundle* color, int dataToKeep)
     if (dataToKeep != AE_SPRITE_KEEP_B && dataToKeep != AE_SPRITE_DEFAULT && color != NULL)
     {
         sprite->color.b = color->b;
-    }
-    if (dataToKeep == AE_SPRITE_DEFAULT)
-    {
-        sprite->color.r = 255;
-        sprite->color.g = 255;
-        sprite->color.b = 255;
     }
 }
 
@@ -1003,7 +1003,7 @@ SDL_bool AE_SpriteRender(AE_Sprite* sprite, SDL_Renderer* renderer, int x, int y
         {
             success = SDL_TRUE;
         }
-        sprite->currentFrame+=((sprite->frameSpeed/2)*step);
+        sprite->currentFrame += ((sprite->frameSpeed/2)*step);
     }
     return success;
 }
@@ -1274,7 +1274,7 @@ Uint64 AE_CreateFinalSeed(Uint64 seednum_1, Uint64 seednum_2, Uint64 seednum_3, 
     finalseed = finalseed << 1 | (-seednum_4 % 97);
     //Set the sixth 8 bytes (48/64)
     finalseed = finalseed << 1 | (seednum_1 % 61);
-    finalseed = finalseed << 1 | (seednum_1 % 61);
+    finalseed = finalseed << 1 | (seednum_1 % 67);
     finalseed = finalseed << 1 | (seednum_2 % 61);
     finalseed = finalseed << 1 | (seednum_2 % 67);
     finalseed = finalseed << 1 | (seednum_3 % 61);
@@ -1452,7 +1452,7 @@ float AE_FloatBase(float input)
  */
 long double AE_Lengthdir_X(int length, float direction)
 {
-    return (long double)(SDL_sin(direction)*length);
+    return (long double)(SDL_cos(direction)*length);
 }
 
 /**
@@ -1464,7 +1464,7 @@ long double AE_Lengthdir_X(int length, float direction)
  */
 long double AE_Lengthdir_Y(int length, float direction)
 {
-    return (long double)(SDL_cos(direction)*length);
+    return (long double)(SDL_sin(direction)*length);
 }
 
 /**
